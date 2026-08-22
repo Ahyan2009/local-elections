@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========== Urdu Virtual Keyboard - High Contrast (Always Visible) ========== */
+
+/* Keyboard container */
+.hg-theme-default {
+  background-color: #e2e8f0 !important;
+  border-radius: 10px !important;
+  padding: 10px !important;
+  border: 1px solid #94a3b8 !important;
+}
+
+/* All keys - light background + dark text (high contrast) */
+.hg-theme-default .hg-button {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-bottom: 2px solid #64748b !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) !important;
+  height: 44px !important;
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+}
+
+/* Hover / Active */
+.hg-theme-default .hg-button:active,
+.hg-theme-default .hg-button:hover {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-bottom-color: #059669 !important;
+}
+
+/* Function buttons (Back, Space, Shift) */
+.hg-theme-default .hg-button.hg-functionBtn {
+  background: #cbd5e1 !important;
+  color: #0f172a !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+}
+
+.hg-theme-default .hg-button.hg-functionBtn:hover,
+.hg-theme-default .hg-button.hg-functionBtn:active {
+  background: #10b981 !important;
+  color: #ffffff !important;
+}
+
+/* Dark theme class (agar use ho) - same high contrast */
+.hg-theme-default.dark-theme {
+  background-color: #e2e8f0 !important;
+}
+
+.hg-theme-default.dark-theme .hg-button {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+.hg-theme-default.dark-theme .hg-button:hover,
+.hg-theme-default.dark-theme .hg-button:active {
+  background: #10b981 !important;
+  color: #ffffff !important;
+}
+
+.hg-theme-default.dark-theme .hg-button.hg-functionBtn {
+  background: #cbd5e1 !important;
+  color: #0f172a !important;
+}
