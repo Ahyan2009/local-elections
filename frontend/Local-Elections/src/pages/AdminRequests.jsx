@@ -7,6 +7,7 @@ const AdminRequests = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Fetch live candidates/requests data from Backend API
   const fetchRequests = async () => {
     try {
       setLoading(true);
@@ -14,7 +15,8 @@ const AdminRequests = () => {
       const response = await API.get('/admin/candidates', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
+      // Filter candidates with status 'pending' or 'pending_approval'
       const pendingRequests = response.data.filter(
         (item) => item.status === 'pending_approval' || item.status === 'pending'
       );
@@ -30,36 +32,46 @@ const AdminRequests = () => {
     fetchRequests();
   }, []);
 
+  // Update Status (Send OTP / Approve)
   const handleSendOtp = async (id) => {
     try {
-      const response = await API.put(`/admin/candidate/${id}/status`, {
-        status: 'approved'
-      });
+      const token = localStorage.getItem('token');
+      const response = await API.put(
+        `/admin/candidate/${id}/status`,
+        { status: 'approved' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       alert(response.data.message || 'OTP Send status update ho gaya');
-      fetchRequests();
+      fetchRequests(); // Refresh table
     } catch (error) {
       alert(error.response?.data?.message || 'عمل درآمد میں ناکامی');
     }
   };
 
+  // Reject / Cancel Request
   const handleDelete = async (id) => {
     try {
-      const response = await API.put(`/admin/candidate/${id}/status`, {
-        status: 'rejected'
-      });
+      const token = localStorage.getItem('token');
+      const response = await API.put(
+        `/admin/candidate/${id}/status`,
+        { status: 'rejected' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       alert(response.data.message || 'درخواست منسوخ کر دی گئی ہے');
-      fetchRequests();
+      fetchRequests(); // Refresh table
     } catch (error) {
       alert(error.response?.data?.message || 'منسوخی میں ناکامی');
     }
   };
 
+  // Logout Handler
   const handleLogout = () => {
     localStorage.removeItem('token');
     alert('لاگ آؤٹ ہو گیا ہے');
     navigate('/login');
   };
 
+  // Sidebar Links Array
   const navItems = [
     { name: 'ڈیش بورڈ (Dashboard)', path: '/admin/dashboard', icon: '📊' },
     { name: 'درخواستیں (Requests)', path: '/admin/requests', icon: '📩' },
@@ -68,8 +80,11 @@ const AdminRequests = () => {
 
   return (
     <div className="flex min-h-screen bg-slate-900 text-white" dir="rtl">
+
+      {/* Sidebar Component */}
       <aside className="w-64 bg-slate-800 border-l border-slate-700 min-h-screen p-4 flex flex-col justify-between shrink-0">
         <div>
+          {/* Sidebar Header */}
           <div className="flex items-center gap-3 p-3 border-b border-slate-700 mb-6">
             <div className="bg-emerald-600 text-white p-2 rounded-lg font-bold text-lg">
               ایڈمن
@@ -80,6 +95,7 @@ const AdminRequests = () => {
             </div>
           </div>
 
+          {/* Navigation Links */}
           <nav className="space-y-2">
             {navItems.map((item) => (
               <NavLink
@@ -100,6 +116,7 @@ const AdminRequests = () => {
           </nav>
         </div>
 
+        {/* Logout Button */}
         <div className="pt-4 border-t border-slate-700">
           <button
             onClick={handleLogout}
@@ -111,8 +128,11 @@ const AdminRequests = () => {
         </div>
       </aside>
 
+      {/* Main Content Area */}
       <main className="flex-1 p-6 space-y-6 overflow-y-auto">
         <div className="max-w-5xl mx-auto space-y-6">
+
+          {/* Header */}
           <div className="flex justify-between items-center border-b border-slate-700 pb-4">
             <h1 className="text-2xl font-bold">ایڈمن - نئی درخواستیں</h1>
             <span className="bg-emerald-600 text-xs px-3 py-1 rounded-full">
@@ -120,6 +140,7 @@ const AdminRequests = () => {
             </span>
           </div>
 
+          {/* Requests Table */}
           <div className="bg-slate-800 rounded-lg shadow-md overflow-hidden border border-slate-700">
             {loading ? (
               <div className="p-6 text-center text-gray-400">ڈیٹا لوڈ ہو رہا ہے...</div>
@@ -140,8 +161,8 @@ const AdminRequests = () => {
                       <td className="p-3 font-medium">{index + 1}</td>
                       <td className="p-3 font-mono" dir="ltr">{item.email}</td>
                       <td className="p-3 text-gray-400">
-                        {item.createdAt 
-                          ? new Date(item.createdAt).toLocaleString('ur-PK') 
+                        {item.createdAt
+                          ? new Date(item.createdAt).toLocaleString('ur-PK')
                           : 'N/A'}
                       </td>
                       <td className="p-3 text-center">
@@ -172,8 +193,10 @@ const AdminRequests = () => {
               </div>
             )}
           </div>
+
         </div>
       </main>
+
     </div>
   );
 };
