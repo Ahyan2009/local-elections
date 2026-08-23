@@ -66,7 +66,11 @@ const LandingPage = () => {
         </p>
 
         {message && (
-          <div className={`p-3 text-sm rounded-lg text-center ${isError ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}>
+          <div
+            className={`p-3 text-sm rounded-lg text-center ${
+              isError ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
+            }`}
+          >
             {message}
           </div>
         )}
@@ -74,24 +78,23 @@ const LandingPage = () => {
         {step === 1 && (
           <form onSubmit={handleRequestSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">ای میل</label>
+              <label className="block text-sm text-gray-600 mb-1">ای میل</label>
               <input
                 type="email"
-                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="example@gmail.com"
-                className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-left"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-600 text-left"
                 dir="ltr"
+                required
               />
             </div>
-
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition duration-200"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50"
             >
-              {loading ? 'پروسیسنگ...' : 'درخواست بھیجیں'}
+              {loading ? 'بھیج رہا ہے...' : 'درخواست بھیجیں'}
             </button>
           </form>
         )}
@@ -99,44 +102,30 @@ const LandingPage = () => {
         {step === 2 && (
           <form onSubmit={handleVerifyOTP} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">ای میل</label>
-              <input
-                type="email"
-                value={email}
-                disabled
-                className="w-full p-3 border border-gray-200 bg-gray-50 rounded-xl text-left text-gray-500"
-                dir="ltr"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">6-digit OTP کوڈ</label>
+              <label className="block text-sm text-gray-600 mb-1">OTP کوڈ</label>
               <input
                 type="text"
-                required
-                maxLength="6"
                 value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                onChange={(e) => setOtp(e.target.value)}
                 placeholder="123456"
-                className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-center tracking-widest text-lg font-bold"
-                dir="ltr"
+                maxLength={6}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-600 text-center tracking-widest font-mono"
+                required
               />
             </div>
-
             <button
               type="submit"
-              disabled={loading || otp.length !== 6}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition duration-200"
+              disabled={loading}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50"
             >
               {loading ? 'تصدیق ہو رہی ہے...' : 'OTP تصدیق کریں'}
             </button>
-
             <button
               type="button"
-              onClick={() => { setStep(1); setOtp(''); setMessage(''); setIsError(false); }}
-              className="w-full text-sm text-gray-500 hover:underline text-center block"
+              onClick={() => setStep(1)}
+              className="w-full text-sm text-gray-500 hover:text-gray-700"
             >
-              دوبارہ ای میل درج کریں
+              ← واپس جائیں
             </button>
           </form>
         )}
