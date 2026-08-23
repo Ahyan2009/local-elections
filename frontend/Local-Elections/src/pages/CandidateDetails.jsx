@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, NavLink } from 'react-router-dom';
-import axios from 'axios';
+import API from '../api/axios';
 
 const CandidateDetails = () => {
   const { id } = useParams();
@@ -13,7 +13,7 @@ const CandidateDetails = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/admin/candidates', {
+      const response = await API.get('/admin/candidates', {
         headers: { Authorization: `Bearer ${token}` },
       });
       const list = response.data || [];
@@ -49,8 +49,8 @@ const CandidateDetails = () => {
     if (!window.confirm(msg)) return;
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.put(
-        `http://localhost:5000/api/admin/candidate/${id}/status`,
+      const res = await API.put(
+        `/admin/candidate/${id}/status`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -65,7 +65,7 @@ const CandidateDetails = () => {
     if (!window.confirm('کیا آپ واقعی حذف کرنا چاہتے ہیں؟')) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/admin/candidate/${id}`, {
+      await API.delete(`/admin/candidate/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('حذف ہو گیا');
