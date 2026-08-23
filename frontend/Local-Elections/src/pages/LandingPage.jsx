@@ -16,7 +16,7 @@ const LandingPage = () => {
     setIsError(false);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/candidate/request-otp', { email });
+      const res = await API.post('/candidate/request-otp', { email });
       setMessage(res.data.message || 'درخواست بھیج دی گئی ہے! ایڈمن کی منظوری کے بعد OTP یہاں درج کریں۔');
       setIsError(false);
       setStep(2);
