@@ -19,16 +19,16 @@ const Login = () => {
     try {
       setLoading(true);
       const res = await API.post('/admin/login', { email, password });
-      
-      if (res.data.success || res.data.token) {
+
+      if (res.data.success && res.data.token) {
         localStorage.setItem('token', res.data.token);
-        alert('خوش آمدید! لاگ ان کامیاب رہا۔');
+        alert(res.data.message || 'خوش آمدید! لاگ ان کامیاب رہا۔');
         navigate('/admin/dashboard');
       } else {
-        alert(res.data.message || 'غلط ای میل یا پاس ورڈ!');
+        alert(res.data.message || 'لاگ ان ناکام');
       }
-    } catch (error) {
-      alert(error.response?.data?.message || 'غلط ای میل یا پاس ورڈ!');
+    } catch (err) {
+      alert(err.response?.data?.message || 'غلط ای میل یا پاس ورڈ!');
     } finally {
       setLoading(false);
     }
@@ -80,7 +80,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-3 rounded-lg transition duration-200 text-sm shadow-md mt-2 disabled:opacity-60"
+              className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-3 rounded-lg transition duration-200 text-sm shadow-md mt-2 disabled:opacity-50"
             >
               {loading ? 'لاگ ان ہو رہا ہے...' : 'لاگ ان کریں'}
             </button>
