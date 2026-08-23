@@ -27,7 +27,12 @@ const AdminDashboard = () => {
 
   const handleStatusUpdate = async (id, status) => {
     try {
-      const response = await API.put(`/admin/candidate/${id}/status`, { status });
+      const token = localStorage.getItem('token');
+      const response = await API.put(
+        `/admin/candidate/${id}/status`,
+        { status },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       alert(response.data.message);
       fetchCandidates();
     } catch (error) {
@@ -114,6 +119,7 @@ const AdminDashboard = () => {
             <p className="text-sm text-slate-400 mt-1">درخواستوں اور امیدواروں کا مجموعی جائزہ</p>
           </div>
 
+          {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-right">
             <div className="bg-slate-800 p-5 rounded-xl border border-slate-700">
               <p className="text-xs text-slate-400 mb-1">کل ریکارڈز</p>
@@ -137,6 +143,7 @@ const AdminDashboard = () => {
             </div>
           </div>
 
+          {/* Quick links */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <button
               onClick={() => navigate('/admin/requests')}
@@ -154,6 +161,7 @@ const AdminDashboard = () => {
             </button>
           </div>
 
+          {/* Recent pending requests */}
           <div className="bg-slate-800 rounded-lg p-5 border border-slate-700 space-y-4">
             <h2 className="text-lg font-bold border-b border-slate-700 pb-2">
               حالیہ زیرِ غور درخواستیں
