@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import API from '../api/axios';
 
 const LandingPage = () => {
   const [email, setEmail] = useState('');
@@ -35,7 +35,7 @@ const LandingPage = () => {
     setIsError(false);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/candidate/verify-otp', { email, otp });
+      const res = await API.post('/candidate/verify-otp', { email, otp });
 
       if (res.data.success) {
         setMessage('OTP تصدیق ہو گئی ہے! اب اپنا رجسٹریشن فارم مکمل کریں۔');
