@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import API from '../api/axios';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
@@ -55,7 +55,7 @@ const Candidates = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/admin/candidates', {
+      const response = await API.get('/admin/candidates', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -97,8 +97,8 @@ const Candidates = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.put(
-        `http://localhost:5000/api/admin/candidate/${id}/status`,
+      const res = await API.put(
+        `/admin/candidate/${id}/status`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -113,7 +113,7 @@ const Candidates = () => {
     if (!window.confirm('کیا آپ واقعی اس امیدوار کو حذف کرنا چاہتے ہیں؟ یہ عمل واپس نہیں ہو سکتا۔')) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/admin/candidate/${id}`, {
+      await API.delete(`/admin/candidate/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('امیدوار حذف کر دیا گیا');
@@ -123,7 +123,6 @@ const Candidates = () => {
     }
   };
 
-  // Search: name, district, UC, CNIC, phone
   const filteredCandidates = candidates.filter((item) => {
     const name = (item.fullName || item.name || '').toLowerCase();
     const district = (item.district || '').toLowerCase();
@@ -154,11 +153,9 @@ const Candidates = () => {
     return matchesSearch && matchesStatus;
   });
 
-  // Pagination
   const totalPages = Math.max(1, Math.ceil(filteredCandidates.length / perPage));
   const paginated = filteredCandidates.slice((currentPage - 1) * perPage, currentPage * perPage);
 
-  // Export CSV (Excel compatible)
   const handleExport = () => {
     const headers = ['نام', 'CNIC', 'فون', 'ای میل', 'ضلع', 'تحصیل', 'UC', 'انتخابی نشان', 'حیثیت'];
     const rows = filteredCandidates.map((c) => [
@@ -326,11 +323,10 @@ const Candidates = () => {
                   layout={urduLayout}
                   onChange={onKeyboardChange}
                   onKeyPress={handleKeyPress}
-                  theme="hg-theme-default hg-layout-default"
                   display={{
-                    '{bksp}': 'Back ⌫',
-                    '{space}': 'Space ␣',
-                    '{shift}': 'Shift ⇧',
+                    '{bksp}': '⌫',
+                    '{space}': 'اسپیس',
+                    '{shift}': '⇧',
                   }}
                 />
               </div>
@@ -347,133 +343,108 @@ const Candidates = () => {
                   <thead className="bg-slate-950 text-gray-300 border-b border-slate-700">
                     <tr>
                       <th className="p-3">نمبر</th>
-                      <th className="p-3">تصویر</th>
                       <th className="p-3">نام</th>
+                      <th className="p-3">CNIC</th>
+                      <th className="p-3">فون</th>
                       <th className="p-3">ضلع</th>
-                      <th className="p-3">تحصیل</th>
                       <th className="p-3">UC</th>
-                      <th className="p-3">انتخابی نشان</th>
                       <th className="p-3">حیثیت</th>
-                      <th className="p-3 text-center">کارروائی</th>
+                      <th className="p-3 text-center">ایکشن</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-700">
-                    {paginated.map((item, index) => {
-                      const rawStatus = (item.status || '').toLowerCase();
-                      const isApproved = rawStatus.includes('approved');
-                      const isRejected = rawStatus.includes('rejected');
-                      const statusText = isApproved ? 'منظور شدہ' : isRejected ? 'مسترد' : 'زیرِ غور';
-                      const candidateName = item.fullName || item.name;
-                      const userImage = item.imageUrl || item.image || item.photo;
-
-                      return (
-                        <tr key={item._id || index} className="hover:bg-slate-750 transition">
-                          <td className="p-3">{(currentPage - 1) * perPage + index + 1}</td>
-                          <td className="p-3">
-                            <div className="w-10 h-10 rounded-lg bg-slate-700 overflow-hidden flex items-center justify-center text-xs font-bold text-emerald-400 border border-slate-600">
-                              {userImage ? (
-                                <img src={userImage} alt={candidateName} className="w-full h-full object-cover" />
-                              ) : (
-                                (candidateName || '?').charAt(0)
-                              )}
-                            </div>
-                          </td>
-                          <td className="p-3 font-semibold">{candidateName}</td>
-                          <td className="p-3">{item.district}</td>
-                          <td className="p-3">{item.tehsil}</td>
-                          <td className="p-3">{item.unionCouncil || item.uc}</td>
-                          <td className="p-3">
-                            <div className="flex items-center gap-2">
-                              {item.symbolIcon && (
-                                <img
-                                  src={item.symbolIcon}
-                                  alt={item.electionSymbol}
-                                  className="w-6 h-6 object-contain filter brightness-200"
-                                />
-                              )}
-                              <span className="text-xs">{item.electionSymbol || '---'}</span>
-                            </div>
-                          </td>
-                          <td className="p-3">
-                            <span
-                              className={`px-2 py-1 rounded text-xs ${
-                                statusText === 'منظور شدہ'
-                                  ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-600'
-                                  : statusText === 'مسترد'
-                                  ? 'bg-red-600/20 text-red-400 border border-red-600'
-                                  : 'bg-amber-600/20 text-amber-400 border border-amber-600'
-                              }`}
+                    {paginated.map((item, index) => (
+                      <tr key={item._id || index} className="hover:bg-slate-750 transition">
+                        <td className="p-3 font-medium">
+                          {(currentPage - 1) * perPage + index + 1}
+                        </td>
+                        <td className="p-3">
+                          <button
+                            onClick={() => navigate(`/admin/candidates/${item._id}`)}
+                            className="text-emerald-400 hover:underline font-medium"
+                          >
+                            {item.fullName || item.name || '---'}
+                          </button>
+                        </td>
+                        <td className="p-3 font-mono text-xs" dir="ltr">{item.cnic || '---'}</td>
+                        <td className="p-3 font-mono text-xs" dir="ltr">{item.phone || '---'}</td>
+                        <td className="p-3">{item.district || '---'}</td>
+                        <td className="p-3">{item.unionCouncil || item.uc || '---'}</td>
+                        <td className="p-3">
+                          <span
+                            className={`px-2 py-1 rounded text-xs ${
+                              (item.status || '').toLowerCase().includes('approved')
+                                ? 'bg-emerald-900 text-emerald-300'
+                                : (item.status || '').toLowerCase().includes('rejected')
+                                ? 'bg-rose-900 text-rose-300'
+                                : 'bg-amber-900 text-amber-300'
+                            }`}
+                          >
+                            {item.status || 'pending'}
+                          </span>
+                        </td>
+                        <td className="p-3 text-center">
+                          <div className="flex gap-1 justify-center flex-wrap">
+                            <button
+                              onClick={() => navigate(`/admin/candidates/${item._id}`)}
+                              className="bg-sky-600 hover:bg-sky-700 text-white px-2 py-1 rounded text-xs"
                             >
-                              {statusText}
-                            </span>
-                          </td>
-                          <td className="p-3">
-                            <div className="flex flex-wrap gap-1 justify-center">
-                              <button
-                                onClick={() => navigate(`/admin/candidates/${item._id}`)}
-                                className="bg-slate-700 hover:bg-slate-600 text-white px-2 py-1 rounded text-xs"
-                              >
-                                تفصیل
-                              </button>
-                              {!isApproved && (
-                                <button
-                                  onClick={() => handleStatusUpdate(item._id, 'approved')}
-                                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-xs"
-                                >
-                                  منظور
-                                </button>
-                              )}
-                              {!isRejected && (
-                                <button
-                                  onClick={() => handleStatusUpdate(item._id, 'rejected')}
-                                  className="bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded text-xs"
-                                >
-                                  مسترد
-                                </button>
-                              )}
-                              <button
-                                onClick={() => handleDelete(item._id)}
-                                className="bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded text-xs"
-                              >
-                                حذف
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                              تفصیل
+                            </button>
+                            <button
+                              onClick={() => handleStatusUpdate(item._id, 'approved')}
+                              className="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-xs"
+                            >
+                              منظور
+                            </button>
+                            <button
+                              onClick={() => handleStatusUpdate(item._id, 'rejected')}
+                              className="bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded text-xs"
+                            >
+                              مسترد
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item._id)}
+                              className="bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded text-xs"
+                            >
+                              حذف
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
             )}
 
             {!loading && filteredCandidates.length === 0 && (
-              <div className="p-6 text-center text-gray-400">کوئی اصلی امیدوار موجود نہیں ہے۔</div>
-            )}
-
-            {/* Pagination */}
-            {!loading && filteredCandidates.length > 0 && (
-              <div className="flex items-center justify-center gap-2 p-4 border-t border-slate-700">
-                <button
-                  disabled={currentPage <= 1}
-                  onClick={() => setCurrentPage((p) => p - 1)}
-                  className="px-3 py-1 rounded bg-slate-700 text-sm disabled:opacity-40"
-                >
-                  پچھلا
-                </button>
-                <span className="text-sm text-slate-300">
-                  صفحہ {currentPage} / {totalPages}
-                </span>
-                <button
-                  disabled={currentPage >= totalPages}
-                  onClick={() => setCurrentPage((p) => p + 1)}
-                  className="px-3 py-1 rounded bg-slate-700 text-sm disabled:opacity-40"
-                >
-                  اگلا
-                </button>
-              </div>
+              <div className="p-6 text-center text-gray-400">کوئی امیدوار نہیں ملا۔</div>
             )}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 bg-slate-700 rounded disabled:opacity-40 text-sm"
+              >
+                ← پچھلا
+              </button>
+              <span className="text-sm text-slate-400">
+                صفحہ {currentPage} / {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 bg-slate-700 rounded disabled:opacity-40 text-sm"
+              >
+                اگلا →
+              </button>
+            </div>
+          )}
         </div>
       </main>
     </div>
