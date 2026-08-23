@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API from '../api/axios';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
@@ -14,45 +16,43 @@ const Login = () => {
       return;
     }
 
-    // Temporary validation check
-    if (email === 'admin@system.gov.pk' && password === 'admin123') {
-      alert('خوش آمدید! لاگ ان کامیاب رہا۔');
-      navigate('/admin/dashboard');
-    } else {
-      alert('غلط ای میل یا پاس ورڈ!');
+    try {
+      setLoading(true);
+      const res = await API.post('/admin/login', { email, password });
+      
+      if (res.data.success || res.data.token) {
+        localStorage.setItem('token', res.data.token);
+        alert('خوش آمدید! لاگ ان کامیاب رہا۔');
+        navigate('/admin/dashboard');
+      } else {
+        alert(res.data.message || 'غلط ای میل یا پاس ورڈ!');
+      }
+    } catch (error) {
+      alert(error.response?.data?.message || 'غلط ای میل یا پاس ورڈ!');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-[85vh] bg-slate-100 flex items-center justify-center p-4 text-slate-900" dir="rtl">
-      
-      {/* Central Clean Card */}
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
-        
-        {/* Dark Top Bar Banner */}
         <div className="bg-slate-900 text-white py-3 text-center text-sm font-bold tracking-wide">
           ایڈمن لاگ ان
         </div>
 
-        {/* Card Body */}
         <div className="p-8 space-y-6 text-center">
-          
-          {/* Logo Badge */}
           <div className="inline-flex items-center justify-center w-14 h-14 bg-emerald-100 text-emerald-800 font-bold text-xl rounded-xl mx-auto shadow-sm">
             PK
           </div>
 
-          {/* Titles */}
           <div className="space-y-1">
             <h1 className="text-xl font-bold text-slate-800">مقامی حکومت انتخابات</h1>
             <p className="text-emerald-700 font-semibold text-sm">ایڈمن پورٹل</p>
             <p className="text-xs text-slate-500 pt-1">سسٹم میں داخل ہونے کے لیے اپنی تفصیلات درج کریں۔</p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleLogin} className="space-y-4 text-right">
-            
-            {/* Email Field */}
             <div className="space-y-1">
               <label className="text-xs text-slate-600 font-medium block">ای میل درج کریں</label>
               <input
@@ -65,7 +65,6 @@ const Login = () => {
               />
             </div>
 
-            {/* Password Field */}
             <div className="space-y-1">
               <label className="text-xs text-slate-600 font-medium block">پاس ورڈ</label>
               <input
@@ -78,15 +77,14 @@ const Login = () => {
               />
             </div>
 
-            {/* Action Button */}
             <button
               type="submit"
-              className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-3 rounded-lg transition duration-200 text-sm shadow-md mt-2"
+              disabled={loading}
+              className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-3 rounded-lg transition duration-200 text-sm shadow-md mt-2 disabled:opacity-60"
             >
-              لاگ ان کریں
+              {loading ? 'لاگ ان ہو رہا ہے...' : 'لاگ ان کریں'}
             </button>
           </form>
-
         </div>
       </div>
     </div>
