@@ -143,7 +143,7 @@ const PublicCandidates = () => {
                     dir="ltr"
                   >
                     {/* Symbol */}
-                    <div className="w-10 h-10 shrink-0 flex items-center justify-center border-r border-slate-300 pr-4">
+                    <div className="w-20 h-20 shrink-0 flex items-center justify-center border-r border-slate-300 pr-4">
                       {c.symbolIcon ? (
                         <img
                           src={c.symbolIcon}
@@ -156,7 +156,7 @@ const PublicCandidates = () => {
                     </div>
 
                     {/* Photo */}
-                    <div className="w-10 h-10 shrink-0 rounded-sm overflow-hidden border border-slate-300 bg-slate-50 flex items-center justify-center">
+                    <div className="w-20 h-20 shrink-0 rounded-sm overflow-hidden border border-slate-300 bg-slate-50 flex items-center justify-center">
                       {c.image ? (
                         <img
                           src={c.image}
