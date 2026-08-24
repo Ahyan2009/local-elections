@@ -136,43 +136,72 @@ const PublicCandidates = () => {
               >
                 <div className="h-1 bg-gradient-to-l from-emerald-500 to-emerald-700"></div>
                 <div className="p-5 space-y-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-xl bg-slate-100 overflow-hidden border border-slate-200 flex items-center justify-center shrink-0">
-                      {c.image ? (
-                        <img src={c.image} alt={c.fullName} className="w-full h-full object-cover" />
+                  {/* Layout: نشان (left) | تصویر (center) | نام (right) — sample jaisa */}
+                  <div
+                    className="flex items-center justify-between gap-3"
+                    dir="ltr"
+                  >
+                    {/* Election symbol */}
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 flex flex-col items-center justify-center">
+                      {c.symbolIcon ? (
+                        <img
+                          src={c.symbolIcon}
+                          alt={c.electionSymbol || 'symbol'}
+                          className="max-w-full max-h-14 sm:max-h-16 object-contain"
+                        />
                       ) : (
-                        <span className="text-2xl font-bold text-emerald-600">
+                        <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 text-xs">
+                          —
+                        </div>
+                      )}
+                      {c.electionSymbol && c.electionSymbol !== 'Pending' && (
+                        <span className="text-[10px] text-slate-500 mt-1 text-center leading-tight max-w-[72px] truncate">
+                          {c.electionSymbol}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Profile photo */}
+                    <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-lg overflow-hidden bg-slate-100 border-2 border-slate-200 flex items-center justify-center shrink-0 shadow-sm">
+                      {c.image ? (
+                        <img
+                          src={c.image}
+                          alt={c.fullName}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-3xl font-bold text-emerald-600">
                           {(c.fullName || '?').charAt(0)}
                         </span>
                       )}
                     </div>
-                    <div>
-                      <h3 className="font-bold text-slate-800 text-lg">{c.fullName}</h3>
-                      <p className="text-xs text-slate-500">
-                        {c.district} • {c.tehsil}
-                      </p>
+
+                    {/* Name */}
+                    <div className="flex-1 min-w-0 text-right" dir="rtl">
+                      <h3 className="font-bold text-slate-800 text-lg sm:text-xl leading-snug break-words">
+                        {c.fullName || '---'}
+                      </h3>
                     </div>
                   </div>
 
+                  {/* UC + تحصیل — pehle jaisa */}
                   <div className="grid grid-cols-2 gap-2 text-xs text-slate-600">
                     <div className="bg-slate-50 rounded-lg p-2">
                       <span className="text-slate-400 block">UC</span>
                       {c.unionCouncil || '---'}
                     </div>
                     <div className="bg-slate-50 rounded-lg p-2">
-                      <span className="text-slate-400 block">نشان</span>
-                      <div className="flex items-center gap-1 mt-0.5">
-                        {c.symbolIcon && (
-                          <img src={c.symbolIcon} alt="" className="w-5 h-5 object-contain" />
-                        )}
-                        <span>{c.electionSymbol || '---'}</span>
-                      </div>
+                      <span className="text-slate-400 block">تحصیل</span>
+                      {c.tehsil || '---'}
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between pt-1">
                     <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium">
                       منظور شدہ
+                    </span>
+                    <span className="text-[10px] text-slate-400">
+                      {c.district || ''}
                     </span>
                   </div>
                 </div>
