@@ -1,12 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import API from '../api/axios';
 import { useNavigate } from 'react-router-dom';
+import Keyboard from 'react-simple-keyboard';
+import 'react-simple-keyboard/build/css/index.css';
 
 const PublicCandidates = () => {
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showKeyboard, setShowKeyboard] = useState(false);
+  const [layoutName, setLayoutName] = useState('default');
+  const keyboardRef = useRef(null);
   const navigate = useNavigate();
+
+  const urduLayout = {
+    default: [
+      'آ ا ب پ ت ٹ ث ج چ ح خ د ڈ ذ',
+      'ر ڑ ز ژ س ش ص ض ط ظ ع غ ف',
+      'ق ک گ ل م ن ں و ہ ھ ء ی ے',
+      '{shift} {space} {bksp}',
+    ],
+    shift: [
+      '! @ # $ % ^ & * ( ) _ +',
+      '۱ ۲ ۳ ۴ ۵ ۶ ۷ ۸ ۹ ۰ - =',
+      '؟ : " { } | < >',
+      '{shift} {space} {bksp}',
+    ],
+  };
+
+  const handleKeyPress = (button) => {
+    if (button === '{shift}') {
+      setLayoutName((prev) => (prev === 'default' ? 'shift' : 'default'));
+    }
+  };
+
+  const onKeyboardChange = (input) => setSearchTerm(input);
+
+  const handleSearchFocus = () => {
+    setShowKeyboard(true);
+    if (keyboardRef.current) keyboardRef.current.setInput(searchTerm);
+  };
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    if (keyboardRef.current) keyboardRef.current.setInput(value);
+  };
 
   useEffect(() => {
     const fetchPublic = async () => {
@@ -38,7 +77,9 @@ const PublicCandidates = () => {
       <div className="max-w-6xl mx-auto px-4 py-10 space-y-8">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-extrabold text-slate-800">منظور شدہ امیدواروں کی فہرست</h1>
-          <p className="text-slate-500 text-sm">صرف ایڈمن کی طرف سے منظور شدہ امیدوار یہاں دکھائے جاتے ہیں</p>
+          <p className="text-slate-500 text-sm">
+            صرف ایڈمن کی طرف سے منظور شدہ امیدوار یہاں دکھائے جاتے ہیں
+          </p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-between items-center">
@@ -46,8 +87,10 @@ const PublicCandidates = () => {
             type="text"
             placeholder="نام، ضلع، UC یا انتخابی نشان سے تلاش..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
+            onFocus={handleSearchFocus}
             className="w-full sm:w-80 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500 shadow-sm"
+            dir="rtl"
           />
           <button
             onClick={() => navigate('/')}
@@ -56,6 +99,29 @@ const PublicCandidates = () => {
             ← ہوم پیج
           </button>
         </div>
+
+        {showKeyboard && (
+          <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-md max-w-2xl mx-auto">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-xs text-slate-500">اردو کی بورڈ</span>
+              <button
+                type="button"
+                onClick={() => setShowKeyboard(false)}
+                className="text-xs text-rose-500 hover:text-rose-600 font-medium"
+              >
+                بند کریں
+              </button>
+            </div>
+            <Keyboard
+              keyboardRef={(r) => (keyboardRef.current = r)}
+              layoutName={layoutName}
+              layout={urduLayout}
+              onChange={onKeyboardChange}
+              onKeyPress={handleKeyPress}
+              theme="hg-theme-default"
+            />
+          </div>
+        )}
 
         {loading ? (
           <div className="text-center text-slate-400 py-16">لوڈ ہو رہا ہے...</div>
@@ -82,7 +148,9 @@ const PublicCandidates = () => {
                     </div>
                     <div>
                       <h3 className="font-bold text-slate-800 text-lg">{c.fullName}</h3>
-                      <p className="text-xs text-slate-500">{c.district} • {c.tehsil}</p>
+                      <p className="text-xs text-slate-500">
+                        {c.district} • {c.tehsil}
+                      </p>
                     </div>
                   </div>
 
