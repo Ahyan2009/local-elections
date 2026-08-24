@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import OtpVerification from './pages/OtpVerification'
@@ -12,10 +12,13 @@ import AdminDashboard from './pages/AdminDashboard'
 import LandingPage from './pages/LandingPage'
 import PublicCandidates from './pages/PublicCandidates'
 
-const App = () => {
+const AppShell = () => {
+  const location = useLocation()
+  const isAdmin = location.pathname.startsWith('/admin')
+
   return (
-    <Router>
-      <Navbar />
+    <>
+      {!isAdmin && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/landingpage" element={<LandingPage />} />
@@ -29,6 +32,14 @@ const App = () => {
         <Route path="/admin/candidate-details" element={<CandidateDetails />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Routes>
+    </>
+  )
+}
+
+const App = () => {
+  return (
+    <Router>
+      <AppShell />
     </Router>
   )
 }

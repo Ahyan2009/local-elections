@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import API from '../api/axios';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
+import AdminLayout from '../components/AdminLayout';
 
 const Candidates = () => {
   const [candidates, setCandidates] = useState([]);
@@ -82,11 +83,6 @@ const Candidates = () => {
     fetchCandidates();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    alert('لاگ آؤٹ ہو گیا ہے');
-    navigate('/login');
-  };
 
   const handleStatusUpdate = async (id, status) => {
     const confirmMsg =
@@ -181,274 +177,202 @@ const Candidates = () => {
     URL.revokeObjectURL(url);
   };
 
-  const navItems = [
-    { name: 'ڈیش بورڈ (Dashboard)', path: '/admin/dashboard', icon: '📊' },
-    { name: 'درخواستیں (Requests)', path: '/admin/requests', icon: '📩' },
-    { name: 'تمام امیدوار (Candidates)', path: '/admin/candidates', icon: '👥' },
-  ];
 
   return (
-    <div className="flex min-h-screen bg-slate-900 text-white" dir="rtl">
-      <aside className="w-64 bg-slate-800 border-l border-slate-700 min-h-screen p-4 flex flex-col justify-between shrink-0">
-        <div>
-          <div className="flex items-center gap-3 p-3 border-b border-slate-700 mb-6">
-            <div className="bg-emerald-600 text-white p-2 rounded-lg font-bold text-lg">ایڈمن</div>
-            <div>
-              <h2 className="font-bold text-base text-white">انتخابات سسٹم</h2>
-              <p className="text-xs text-slate-400">Admin Control Panel</p>
-            </div>
+    <AdminLayout title="تمام امیدواروں کی فہرست">
+      <div className="max-w-6xl mx-auto space-y-4 md:space-y-6">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap justify-between items-start sm:items-center border-b border-slate-700 pb-4 gap-3">
+          <h1 className="text-xl sm:text-2xl font-bold">ایڈمن - تمام امیدواروں کی فہرست</h1>
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <button
+              onClick={handleExport}
+              className="bg-sky-600 hover:bg-sky-700 text-white text-xs px-3 sm:px-4 py-2 rounded-lg font-medium"
+            >
+              📥 Excel Export
+            </button>
+            <span className="bg-emerald-600 text-xs px-3 py-1 rounded-full">
+              کل امیدوار: {filteredCandidates.length}
+            </span>
           </div>
-          <nav className="space-y-2">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all duration-200 ${
-                    isActive
-                      ? 'bg-emerald-600 text-white font-medium shadow-md'
-                      : 'text-slate-300 hover:bg-slate-700/60 hover:text-white'
-                  }`
-                }
-              >
-                <span className="text-lg">{item.icon}</span>
-                <span>{item.name}</span>
-              </NavLink>
-            ))}
-          </nav>
         </div>
-        <div className="pt-4 border-t border-slate-700">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white py-2.5 rounded-xl text-sm font-medium transition duration-200 shadow-md"
-          >
-            <span>🚪</span>
-            <span>لاگ آؤٹ (Logout)</span>
-          </button>
-        </div>
-      </aside>
 
-      <main className="flex-1 p-6 space-y-6 overflow-y-auto">
-        <div className="max-w-6xl mx-auto space-y-6">
-          <div className="flex flex-wrap justify-between items-center border-b border-slate-700 pb-4 gap-3">
-            <h1 className="text-2xl font-bold">ایڈمن - تمام امیدواروں کی فہرست</h1>
-            <div className="flex items-center gap-3">
+        <div className="bg-slate-800 p-3 sm:p-4 rounded-lg border border-slate-700 flex flex-col md:flex-row flex-wrap gap-3 md:gap-4 justify-between items-stretch md:items-center">
+          <div className="w-full md:flex-1 md:min-w-[200px] md:max-w-md">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              onFocus={handleSearchFocus}
+              placeholder="نام، CNIC، فون، ضلع یا UC سے تلاش کریں..."
+              className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              dir="rtl"
+            />
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <label className="text-sm text-slate-400 whitespace-nowrap">حیثیت:</label>
+            <select
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            >
+              <option value="all">تمام</option>
+              <option value="pending">زیرِ غور (pending)</option>
+              <option value="approved">منظور (approved)</option>
+              <option value="rejected">مسترد (rejected)</option>
+            </select>
+          </div>
+        </div>
+
+        {showKeyboard && (
+          <div className="bg-slate-800 p-3 rounded-lg border border-slate-700 shadow-inner">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-xs text-slate-400">اردو کی بورڈ</span>
               <button
-                onClick={handleExport}
-                className="bg-sky-600 hover:bg-sky-700 text-white text-xs px-4 py-2 rounded-lg font-medium"
+                type="button"
+                onClick={() => setShowKeyboard(false)}
+                className="text-xs text-rose-400 hover:text-rose-300"
               >
-                📥 Excel Export
+                بند کریں
               </button>
-              <span className="bg-emerald-600 text-xs px-3 py-1 rounded-full">
-                کل امیدوار: {filteredCandidates.length}
-              </span>
             </div>
+            <Keyboard
+              keyboardRef={(r) => (keyboardRef.current = r)}
+              layoutName={layoutName}
+              layout={urduLayout}
+              onChange={onKeyboardChange}
+              onKeyPress={handleKeyPress}
+              theme="hg-theme-default"
+            />
           </div>
+        )}
 
-          {/* Filters */}
-          <div className="bg-slate-800 p-4 rounded-lg border border-slate-700 flex flex-wrap gap-4 justify-between items-center">
-            <div className="w-full md:w-1/3">
-              <input
-                type="text"
-                placeholder="نام، CNIC، فون، ضلع یا UC سے تلاش کریں..."
-                value={searchTerm}
-                onFocus={handleSearchFocus}
-                onChange={handleSearchChange}
-                className="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-md text-sm text-white focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-gray-300">حیثیت:</label>
-              <select
-                value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-md text-sm text-white focus:outline-none focus:border-emerald-500"
-              >
-                <option value="all">تمام</option>
-                <option value="pending">زیرِ غور (Pending)</option>
-                <option value="approved">منظور شدہ (Approved)</option>
-                <option value="rejected">مسترد شدہ (Rejected)</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Urdu Keyboard */}
-          {showKeyboard && (
-            <>
-              <style>{`
-                .hg-theme-default {
-                  background-color: #e2e8f0 !important;
-                  border-radius: 10px !important;
-                  padding: 10px !important;
-                  border: 1px solid #94a3b8 !important;
-                }
-                .hg-theme-default .hg-button {
-                  background: #ffffff !important;
-                  color: #0f172a !important;
-                  border-bottom: 2px solid #64748b !important;
-                  height: 44px !important;
-                  font-size: 17px !important;
-                  font-weight: 600 !important;
-                  border-radius: 6px !important;
-                }
-                .hg-theme-default .hg-button:hover,
-                .hg-theme-default .hg-button:active {
-                  background: #10b981 !important;
-                  color: #ffffff !important;
-                }
-                .hg-theme-default .hg-button.hg-functionBtn {
-                  background: #cbd5e1 !important;
-                  color: #0f172a !important;
-                  font-size: 13px !important;
-                  font-weight: 700 !important;
-                }
-              `}</style>
-              <div className="bg-slate-800 p-3 rounded-lg border border-slate-700 shadow-inner">
-                <div className="flex justify-between items-center mb-2 px-1">
-                  <span className="text-xs font-semibold text-emerald-400">اردو کی بورڈ</span>
-                  <button
-                    type="button"
-                    onClick={() => setShowKeyboard(false)}
-                    className="text-xs text-rose-400 hover:underline font-bold"
-                  >
-                    بند کریں ✕
-                  </button>
-                </div>
-                <Keyboard
-                  keyboardRef={(r) => (keyboardRef.current = r)}
-                  layoutName={layoutName}
-                  layout={urduLayout}
-                  onChange={onKeyboardChange}
-                  onKeyPress={handleKeyPress}
-                  display={{
-                    '{bksp}': '⌫',
-                    '{space}': 'اسپیس',
-                    '{shift}': '⇧',
-                  }}
-                />
-              </div>
-            </>
-          )}
-
-          {/* Table */}
-          <div className="bg-slate-800 rounded-lg shadow-md overflow-hidden border border-slate-700">
-            {loading ? (
-              <div className="p-6 text-center text-gray-400">ڈیٹا لوڈ ہو رہا ہے...</div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-right text-sm">
-                  <thead className="bg-slate-950 text-gray-300 border-b border-slate-700">
-                    <tr>
-                      <th className="p-3">نمبر</th>
-                      <th className="p-3">نام</th>
-                      <th className="p-3">CNIC</th>
-                      <th className="p-3">فون</th>
-                      <th className="p-3">ضلع</th>
-                      <th className="p-3">UC</th>
-                      <th className="p-3">حیثیت</th>
-                      <th className="p-3 text-center">ایکشن</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-700">
-                    {paginated.map((item, index) => (
-                      <tr key={item._id || index} className="hover:bg-slate-750 transition">
-                        <td className="p-3 font-medium">
-                          {(currentPage - 1) * perPage + index + 1}
-                        </td>
-                        <td className="p-3">
+        <div className="bg-slate-800 rounded-lg shadow-md overflow-hidden border border-slate-700">
+          {loading ? (
+            <div className="p-6 text-center text-gray-400">ڈیٹا لوڈ ہو رہا ہے...</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-right text-sm min-w-[720px]">
+                <thead className="bg-slate-950 text-gray-300 border-b border-slate-700">
+                  <tr>
+                    <th className="p-2 sm:p-3 whitespace-nowrap">نمبر</th>
+                    <th className="p-2 sm:p-3 whitespace-nowrap">نام</th>
+                    <th className="p-2 sm:p-3 whitespace-nowrap">CNIC</th>
+                    <th className="p-2 sm:p-3 whitespace-nowrap">فون</th>
+                    <th className="p-2 sm:p-3 whitespace-nowrap">ضلع</th>
+                    <th className="p-2 sm:p-3 whitespace-nowrap">UC</th>
+                    <th className="p-2 sm:p-3 whitespace-nowrap">حیثیت</th>
+                    <th className="p-2 sm:p-3 text-center whitespace-nowrap">ایکشن</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-700">
+                  {paginated.map((item, index) => (
+                    <tr key={item._id || index} className="hover:bg-slate-750/50 transition">
+                      <td className="p-2 sm:p-3 font-medium whitespace-nowrap">
+                        {(currentPage - 1) * perPage + index + 1}
+                      </td>
+                      <td className="p-2 sm:p-3 whitespace-nowrap max-w-[140px] truncate">
+                        {item.fullName || item.name || '---'}
+                      </td>
+                      <td className="p-2 sm:p-3 font-mono text-xs whitespace-nowrap" dir="ltr">
+                        {item.cnic || '---'}
+                      </td>
+                      <td className="p-2 sm:p-3 font-mono text-xs whitespace-nowrap" dir="ltr">
+                        {item.phone || '---'}
+                      </td>
+                      <td className="p-2 sm:p-3 whitespace-nowrap">{item.district || '---'}</td>
+                      <td className="p-2 sm:p-3 whitespace-nowrap">
+                        {item.unionCouncil || item.uc || '---'}
+                      </td>
+                      <td className="p-2 sm:p-3 whitespace-nowrap">
+                        {(() => {
+                          const s = (item.status || '').toLowerCase();
+                          if (s.includes('approved'))
+                            return (
+                              <span className="px-2 py-0.5 rounded text-xs bg-emerald-900 text-emerald-300">
+                                approved
+                              </span>
+                            );
+                          if (s.includes('rejected'))
+                            return (
+                              <span className="px-2 py-0.5 rounded text-xs bg-rose-900 text-rose-300">
+                                rejected
+                              </span>
+                            );
+                          return (
+                            <span className="px-2 py-0.5 rounded text-xs bg-amber-900 text-amber-300">
+                              pending
+                            </span>
+                          );
+                        })()}
+                      </td>
+                      <td className="p-2 sm:p-3 text-center">
+                        <div className="flex gap-1 justify-center flex-wrap min-w-[160px]">
                           <button
                             onClick={() => navigate(`/admin/candidates/${item._id}`)}
-                            className="text-emerald-400 hover:underline font-medium"
+                            className="bg-sky-600 hover:bg-sky-700 text-white px-2 py-1 rounded text-xs"
                           >
-                            {item.fullName || item.name || '---'}
+                            تفصیل
                           </button>
-                        </td>
-                        <td className="p-3 font-mono text-xs" dir="ltr">{item.cnic || '---'}</td>
-                        <td className="p-3 font-mono text-xs" dir="ltr">{item.phone || '---'}</td>
-                        <td className="p-3">{item.district || '---'}</td>
-                        <td className="p-3">{item.unionCouncil || item.uc || '---'}</td>
-                        <td className="p-3">
-                          <span
-                            className={`px-2 py-1 rounded text-xs ${
-                              (item.status || '').toLowerCase().includes('approved')
-                                ? 'bg-emerald-900 text-emerald-300'
-                                : (item.status || '').toLowerCase().includes('rejected')
-                                ? 'bg-rose-900 text-rose-300'
-                                : 'bg-amber-900 text-amber-300'
-                            }`}
+                          <button
+                            onClick={() => handleStatusUpdate(item._id, 'approved')}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-xs"
                           >
-                            {item.status || 'pending'}
-                          </span>
-                        </td>
-                        <td className="p-3 text-center">
-                          <div className="flex gap-1 justify-center flex-wrap">
-                            <button
-                              onClick={() => navigate(`/admin/candidates/${item._id}`)}
-                              className="bg-sky-600 hover:bg-sky-700 text-white px-2 py-1 rounded text-xs"
-                            >
-                              تفصیل
-                            </button>
-                            <button
-                              onClick={() => handleStatusUpdate(item._id, 'approved')}
-                              className="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-xs"
-                            >
-                              منظور
-                            </button>
-                            <button
-                              onClick={() => handleStatusUpdate(item._id, 'rejected')}
-                              className="bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded text-xs"
-                            >
-                              مسترد
-                            </button>
-                            <button
-                              onClick={() => handleDelete(item._id)}
-                              className="bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded text-xs"
-                            >
-                              حذف
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {!loading && filteredCandidates.length === 0 && (
-              <div className="p-6 text-center text-gray-400">کوئی امیدوار نہیں ملا۔</div>
-            )}
-          </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2">
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="px-3 py-1 bg-slate-700 rounded disabled:opacity-40 text-sm"
-              >
-                ← پچھلا
-              </button>
-              <span className="text-sm text-slate-400">
-                صفحہ {currentPage} / {totalPages}
-              </span>
-              <button
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1 bg-slate-700 rounded disabled:opacity-40 text-sm"
-              >
-                اگلا →
-              </button>
+                            منظور
+                          </button>
+                          <button
+                            onClick={() => handleStatusUpdate(item._id, 'rejected')}
+                            className="bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded text-xs"
+                          >
+                            مسترد
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item._id)}
+                            className="bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded text-xs"
+                          >
+                            حذف
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
+
+          {!loading && filteredCandidates.length === 0 && (
+            <div className="p-6 text-center text-gray-400">کوئی امیدوار نہیں ملا۔</div>
+          )}
         </div>
-      </main>
-    </div>
+
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 flex-wrap">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 bg-slate-700 rounded disabled:opacity-40 text-sm"
+            >
+              ← پچھلا
+            </button>
+            <span className="text-sm text-slate-400">
+              صفحہ {currentPage} / {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 bg-slate-700 rounded disabled:opacity-40 text-sm"
+            >
+              اگلا →
+            </button>
+          </div>
+        )}
+      </div>
+    </AdminLayout>
   );
+
 };
 
 export default Candidates;
