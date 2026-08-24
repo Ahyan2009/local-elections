@@ -136,17 +136,17 @@ const PublicCandidates = () => {
               >
                 <div className="h-1 bg-gradient-to-l from-emerald-500 to-emerald-700"></div>
                 
-                <div className="p-5">
-                  {/* ===== BALLOT STYLE - Symbol & Photo SAME SIZE (thoda chhota) ===== */}
-                  <div className="flex items-center justify-between gap-3" dir="ltr">
+                <div className="p-4">
+                  {/* ===== BALLOT STYLE - Symbol + Photo + Name bilkul saath-saath ===== */}
+                  <div className="flex items-center gap-3" dir="ltr">
                     
                     {/* 1. Election Symbol */}
-                    <div className="w-16 h-20 sm:w-18 sm:h-22 shrink-0 flex items-center justify-center bg-slate-50 rounded-md border border-slate-200">
+                    <div className="w-14 h-16 sm:w-16 sm:h-18 shrink-0 flex items-center justify-center bg-slate-50 rounded-md border border-slate-200">
                       {c.symbolIcon ? (
                         <img
                           src={c.symbolIcon}
                           alt={c.electionSymbol || 'symbol'}
-                          className="w-full h-full object-contain p-1.5"
+                          className="w-full h-full object-contain p-1"
                         />
                       ) : (
                         <span className="text-slate-400 text-sm">—</span>
@@ -154,7 +154,7 @@ const PublicCandidates = () => {
                     </div>
 
                     {/* 2. Candidate Photo */}
-                    <div className="w-16 h-20 sm:w-18 sm:h-22 shrink-0 rounded-md overflow-hidden border-2 border-slate-300 bg-slate-50 flex items-center justify-center shadow-sm">
+                    <div className="w-14 h-16 sm:w-16 sm:h-18 shrink-0 rounded-md overflow-hidden border-2 border-slate-300 bg-slate-50 flex items-center justify-center shadow-sm">
                       {c.image ? (
                         <img
                           src={c.image}
@@ -162,15 +162,15 @@ const PublicCandidates = () => {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="text-xl font-bold text-emerald-600">
+                        <span className="text-lg font-bold text-emerald-600">
                           {(c.fullName || '?').charAt(0)}
                         </span>
                       )}
                     </div>
 
-                    {/* 3. Name */}
+                    {/* 3. Name - bilkul paas */}
                     <div className="flex-1 min-w-0 text-right" dir="rtl">
-                      <h3 className="font-bold text-slate-800 text-lg sm:text-xl leading-tight break-words">
+                      <h3 className="font-bold text-slate-800 text-base sm:text-lg leading-tight break-words">
                         {c.fullName || '---'}
                       </h3>
                     </div>
