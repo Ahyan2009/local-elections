@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
+import Cropper from 'react-easy-crop';
 import API from '../api/axios';
 
 // Black & White Election Symbols List
@@ -28,6 +29,53 @@ const ELECTION_SYMBOLS = [
   { name: 'Radio (ریڈیو)', icon: 'https://img.icons8.com/ios-filled/50/000000/radio.png' }
 ];
 
+// Helper: crop image and return Blob
+const createImage = (url) =>
+  new Promise((resolve, reject) => {
+    const image = new Image();
+    image.addEventListener('load', () => resolve(image));
+    image.addEventListener('error', (error) => reject(error));
+    image.setAttribute('crossOrigin', 'anonymous');
+    image.src = url;
+  });
+
+async function getCroppedImg(imageSrc, pixelCrop) {
+  const image = await createImage(imageSrc);
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  // Final square size (good quality for profile)
+  const size = 400;
+  canvas.width = size;
+  canvas.height = size;
+
+  ctx.drawImage(
+    image,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    size,
+    size
+  );
+
+  return new Promise((resolve) => {
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          resolve(null);
+          return;
+        }
+        resolve(blob);
+      },
+      'image/jpeg',
+      0.92
+    );
+  });
+}
+
 const Register = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -46,14 +94,22 @@ const Register = () => {
   });
 
   const [selectedSymbol, setSelectedSymbol] = useState(ELECTION_SYMBOLS[0]);
-  const [profileImage, setProfileImage] = useState(null);
+  const [profileImage, setProfileImage] = useState(null); // final cropped File/Blob
   const [imagePreview, setImagePreview] = useState(null);
   const [isSymbolDropdownOpen, setIsSymbolDropdownOpen] = useState(false);
+
+  // Crop states
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
   const [loading, setLoading] = useState(false);
   const [activeInput, setActiveInput] = useState(null);
   const [layoutName, setLayoutName] = useState('default');
   const keyboardRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (emailParam) {
@@ -87,11 +143,9 @@ const Register = () => {
     const { name, value } = e.target;
     let newValue = value;
 
-    // CNIC: only digits, max 13 characters
     if (name === 'cnic') {
       newValue = value.replace(/\D/g, '').slice(0, 13);
     }
-    // Phone / Mobile: only digits, max 11 characters
     if (name === 'phone') {
       newValue = value.replace(/\D/g, '').slice(0, 11);
     }
@@ -102,11 +156,57 @@ const Register = () => {
     }
   };
 
+  // When user selects a file → open crop modal
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setProfileImage(file);
-      setImagePreview(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onload = () => {
+        setCropImageSrc(reader.result);
+        setShowCropModal(true);
+        setCrop({ x: 0, y: 0 });
+        setZoom(1);
+      };
+      reader.readAsDataURL(file);
+    }
+    // Reset input so same file can be selected again
+    e.target.value = '';
+  };
+
+  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  // Confirm crop → create final image
+  const handleCropConfirm = async () => {
+    if (!cropImageSrc || !croppedAreaPixels) return;
+
+    try {
+      const croppedBlob = await getCroppedImg(cropImageSrc, croppedAreaPixels);
+      if (croppedBlob) {
+        // Create a File object so FormData accepts it nicely
+        const croppedFile = new File([croppedBlob], 'profile.jpg', {
+          type: 'image/jpeg',
+        });
+
+        setProfileImage(croppedFile);
+        setImagePreview(URL.createObjectURL(croppedBlob));
+      }
+    } catch (err) {
+      console.error(err);
+      alert('تصویر کراپ کرنے میں مسئلہ پیش آیا۔');
+    } finally {
+      setShowCropModal(false);
+      setCropImageSrc(null);
+    }
+  };
+
+  const handleCropCancel = () => {
+    setShowCropModal(false);
+    setCropImageSrc(null);
+    // Clear previous selection if user cancels
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -126,7 +226,7 @@ const Register = () => {
     e.preventDefault();
 
     if (!profileImage) {
-      alert('براہ کرم اپنی تصویر اپ لوڈ کریں۔');
+      alert('براہ کرم اپنی تصویر اپ لوڈ کریں اور کراپ کریں۔');
       return;
     }
 
@@ -172,7 +272,7 @@ const Register = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4 text-right">
           
-          {/* Automatic Black & White Square Profile Image */}
+          {/* Profile Image Section */}
           <div className="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 p-4 rounded-xl bg-slate-50">
             {imagePreview ? (
               <img 
@@ -187,15 +287,17 @@ const Register = () => {
             )}
             <label className="text-xs text-slate-600 font-medium block mb-1">امیدوار کی تصویر (لازمی)</label>
             <input
+              ref={fileInputRef}
               type="file"
               accept="image/*"
               onChange={handleImageChange}
               className="text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:bg-slate-200 file:text-slate-800 hover:file:bg-slate-300 cursor-pointer"
-              required
+              required={!profileImage}
             />
+            <p className="text-[10px] text-slate-400 mt-1">تصویر منتخب کرنے کے بعد آپ اسے کراپ کر سکیں گے</p>
           </div>
 
-          {/* Email Address - Back to original disabled input */}
+          {/* Email Address */}
           <div>
             <label className="text-xs text-slate-600 font-medium block mb-1">ای میل ایڈریس</label>
             <input
@@ -376,6 +478,72 @@ const Register = () => {
         )}
 
       </div>
+
+      {/* ==================== CROP MODAL ==================== */}
+      {showCropModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+            {/* Header */}
+            <div className="px-5 py-3 border-b border-slate-200 flex justify-between items-center">
+              <h3 className="font-bold text-slate-800">تصویر کراپ کریں</h3>
+              <button
+                type="button"
+                onClick={handleCropCancel}
+                className="text-slate-500 hover:text-red-500 text-xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Crop Area */}
+            <div className="relative h-80 bg-slate-900">
+              <Cropper
+                image={cropImageSrc}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}                 // Square crop (1:1)
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+                showGrid={true}
+                cropShape="rect"
+              />
+            </div>
+
+            {/* Zoom Slider */}
+            <div className="px-5 py-3 bg-slate-50">
+              <label className="text-xs text-slate-600 block mb-1">زوم</label>
+              <input
+                type="range"
+                min={1}
+                max={3}
+                step={0.05}
+                value={zoom}
+                onChange={(e) => setZoom(Number(e.target.value))}
+                className="w-full accent-slate-800"
+              />
+            </div>
+
+            {/* Buttons */}
+            <div className="px-5 py-4 flex gap-3 justify-end border-t border-slate-200">
+              <button
+                type="button"
+                onClick={handleCropCancel}
+                className="px-5 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm font-medium hover:bg-slate-100"
+              >
+                منسوخ
+              </button>
+              <button
+                type="button"
+                onClick={handleCropConfirm}
+                className="px-5 py-2 rounded-lg bg-slate-900 text-white text-sm font-medium hover:bg-black"
+              >
+                کراپ کریں ✓
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
