@@ -129,77 +129,77 @@ const PublicCandidates = () => {
           <div className="text-center text-slate-400 py-16">کوئی منظور شدہ امیدوار نہیں ملا</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filtered.map((c) => (
-              <div
-                key={c._id}
-                className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden"
-              >
-                <div className="h-1 bg-gradient-to-l from-emerald-500 to-emerald-700"></div>
-                
-                <div className="p-4">
-                  {/* ===== BALANCED BALLOT LAYOUT ===== */}
-                  <div className="flex items-center gap-3" dir="ltr">
-                    
-                    {/* Symbol */}
-                    <div className="w-14 h-16 sm:w-16 sm:h-18 shrink-0 flex items-center justify-center bg-slate-50 rounded-md border border-slate-200">
-                      {c.symbolIcon ? (
-                        <img
-                          src={c.symbolIcon}
-                          alt={c.electionSymbol || 'symbol'}
-                          className="w-full h-full object-contain p-1"
-                        />
-                      ) : (
-                        <span className="text-slate-400 text-sm">—</span>
-                      )}
-                    </div>
+           {filtered.map((c) => (
+  <div
+    key={c._id}
+    className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden"
+  >
+    <div className="h-1 bg-gradient-to-l from-emerald-500 to-emerald-700"></div>
+    
+    <div className="p-4">
+      {/* ===== COMPACT BALLOT STYLE LAYOUT ===== */}
+      <div className="flex items-center gap-2.5" dir="ltr">
+        
+        {/* Symbol */}
+        <div className="w-12 h-14 sm:w-14 sm:h-16 shrink-0 flex items-center justify-center bg-slate-50 rounded-md border border-slate-200">
+          {c.symbolIcon ? (
+            <img
+              src={c.symbolIcon}
+              alt={c.electionSymbol || 'symbol'}
+              className="w-full h-full object-contain p-1"
+            />
+          ) : (
+            <span className="text-slate-400 text-sm">—</span>
+          )}
+        </div>
 
-                    {/* Photo */}
-                    <div className="w-14 h-16 sm:w-16 sm:h-18 shrink-0 rounded-md overflow-hidden border-2 border-slate-300 bg-slate-50 flex items-center justify-center shadow-sm">
-                      {c.image ? (
-                        <img
-                          src={c.image}
-                          alt={c.fullName}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-lg font-bold text-emerald-600">
-                          {(c.fullName || '?').charAt(0)}
-                        </span>
-                      )}
-                    </div>
+        {/* Photo */}
+        <div className="w-12 h-14 sm:w-14 sm:h-16 shrink-0 rounded-md overflow-hidden border-2 border-slate-300 bg-slate-50 flex items-center justify-center shadow-sm">
+          {c.image ? (
+            <img
+              src={c.image}
+              alt={c.fullName}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-lg font-bold text-emerald-600">
+              {(c.fullName || '?').charAt(0)}
+            </span>
+          )}
+        </div>
 
-                    {/* Name */}
-                    <div className="flex-1 text-right pr-1" dir="rtl">
-                      <h3 className="font-bold text-slate-800 text-base sm:text-lg leading-snug">
-                        {c.fullName || '---'}
-                      </h3>
-                    </div>
-                  </div>
+        {/* Name - اب قریب ہے */}
+        <div className="flex-1 min-w-0 text-right" dir="rtl">
+          <h3 className="font-bold text-slate-800 text-base sm:text-lg leading-tight truncate">
+            {c.fullName || '---'}
+          </h3>
+        </div>
+      </div>
 
-                  {/* UC + تحصیل */}
-                  <div className="grid grid-cols-2 gap-2 text-xs text-slate-600 mt-4">
-                    <div className="bg-slate-50 rounded-lg p-2">
-                      <span className="text-slate-400 block">UC</span>
-                      {c.unionCouncil || '---'}
-                    </div>
-                    <div className="bg-slate-50 rounded-lg p-2">
-                      <span className="text-slate-400 block">تحصیل</span>
-                      {c.tehsil || '---'}
-                    </div>
-                  </div>
+      {/* UC + تحصیل */}
+      <div className="grid grid-cols-2 gap-2 text-xs text-slate-600 mt-4">
+        <div className="bg-slate-50 rounded-lg p-2">
+          <span className="text-slate-400 block">UC</span>
+          {c.unionCouncil || '---'}
+        </div>
+        <div className="bg-slate-50 rounded-lg p-2">
+          <span className="text-slate-400 block">تحصیل</span>
+          {c.tehsil || '---'}
+        </div>
+      </div>
 
-                  {/* Bottom */}
-                  <div className="flex items-center justify-between pt-3">
-                    <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2.5 py-0.5 rounded-full font-medium">
-                      منظور شدہ
-                    </span>
-                    <span className="text-[10px] text-slate-400">
-                      {c.district || ''}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
+      {/* Bottom */}
+      <div className="flex items-center justify-between pt-3">
+        <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2.5 py-0.5 rounded-full font-medium">
+          منظور شدہ
+        </span>
+        <span className="text-[10px] text-slate-400">
+          {c.district || ''}
+        </span>
+      </div>
+    </div>
+  </div>
+))}
           </div>
         )}
       </div>
