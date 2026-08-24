@@ -137,8 +137,8 @@ const PublicCandidates = () => {
                 <div className="h-1 bg-gradient-to-l from-emerald-500 to-emerald-700"></div>
                 
                 <div className="p-4">
-                  {/* ===== BALLOT STYLE - Symbol + Photo + Name bilkul saath-saath ===== */}
-                  <div className="flex items-center gap-3" dir="ltr">
+                  {/* ===== BALLOT STYLE - Gap bilkul khatam ===== */}
+                  <div className="flex items-center gap-2" dir="ltr">
                     
                     {/* 1. Election Symbol */}
                     <div className="w-14 h-16 sm:w-16 sm:h-18 shrink-0 flex items-center justify-center bg-slate-50 rounded-md border border-slate-200">
@@ -168,9 +168,9 @@ const PublicCandidates = () => {
                       )}
                     </div>
 
-                    {/* 3. Name - bilkul paas */}
-                    <div className="flex-1 min-w-0 text-right" dir="rtl">
-                      <h3 className="font-bold text-slate-800 text-base sm:text-lg leading-tight break-words">
+                    {/* 3. Name - bilkul paas, no extra space */}
+                    <div className="text-right" dir="rtl">
+                      <h3 className="font-bold text-slate-800 text-base sm:text-lg leading-tight">
                         {c.fullName || '---'}
                       </h3>
                     </div>
