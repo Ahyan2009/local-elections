@@ -139,7 +139,7 @@ const PublicCandidates = () => {
                 <div className="p-3">
                   {/* ===== ASLI BALLOT PAPER STYLE ROW ===== */}
                   <div
-                    className="flex items-center justify-between border-2 border-slate-300 rounded-md px-2 py-1.5 bg-white"
+                    className="flex items-center border-2 border-slate-300 rounded-md px-2 py-1.5 bg-white gap-2"
                     dir="ltr"
                   >
                     {/* Symbol */}
@@ -156,7 +156,7 @@ const PublicCandidates = () => {
                     </div>
 
                     {/* Photo */}
-                    <div className="w-10 h-10 shrink-0 rounded-sm overflow-hidden border border-slate-300 bg-slate-50 flex items-center justify-center mx-2">
+                    <div className="w-10 h-10 shrink-0 rounded-sm overflow-hidden border border-slate-300 bg-slate-50 flex items-center justify-center">
                       {c.image ? (
                         <img
                           src={c.image}
@@ -171,7 +171,7 @@ const PublicCandidates = () => {
                     </div>
 
                     {/* Name */}
-                    <div className="flex-1 min-w-0 text-right" dir="rtl">
+                    <div className="flex-1 min-w-0 text-right pr-1" dir="rtl">
                       <h3 className="font-bold text-slate-800 text-sm sm:text-base leading-tight truncate">
                         {c.fullName || '---'}
                       </h3>
