@@ -137,11 +137,11 @@ const PublicCandidates = () => {
                 <div className="h-1 bg-gradient-to-l from-emerald-500 to-emerald-700"></div>
                 
                 <div className="p-5">
-                  {/* ===== BALLOT PAPER STYLE LAYOUT (exactly like first image) ===== */}
-                  <div className="flex items-center justify-between gap-4" dir="ltr">
+                  {/* ===== BALLOT PAPER STYLE - Symbol & Photo SAME SIZE ===== */}
+                  <div className="flex items-center justify-between gap-3" dir="ltr">
                     
-                    {/* 1. Election Symbol (Left) */}
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 flex items-center justify-center">
+                    {/* 1. Election Symbol (Left) - Same size as photo */}
+                    <div className="w-20 h-24 sm:w-24 sm:h-28 shrink-0 flex items-center justify-center">
                       {c.symbolIcon ? (
                         <img
                           src={c.symbolIcon}
@@ -149,14 +149,14 @@ const PublicCandidates = () => {
                           className="max-w-full max-h-full object-contain"
                         />
                       ) : (
-                        <div className="w-14 h-14 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 text-sm">
+                        <div className="w-16 h-20 rounded-md bg-slate-100 flex items-center justify-center text-slate-400 text-sm">
                           —
                         </div>
                       )}
                     </div>
 
-                    {/* 2. Candidate Photo (Center) - framed like ballot paper */}
-                    <div className="w-24 h-28 sm:w-28 sm:h-32 rounded-md overflow-hidden border-2 border-slate-300 bg-slate-50 flex items-center justify-center shrink-0 shadow-sm">
+                    {/* 2. Candidate Photo (Center) - Same size as symbol */}
+                    <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-md overflow-hidden border-2 border-slate-300 bg-slate-50 flex items-center justify-center shrink-0 shadow-sm">
                       {c.image ? (
                         <img
                           src={c.image}
@@ -164,7 +164,7 @@ const PublicCandidates = () => {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="text-3xl font-bold text-emerald-600">
+                        <span className="text-2xl font-bold text-emerald-600">
                           {(c.fullName || '?').charAt(0)}
                         </span>
                       )}
