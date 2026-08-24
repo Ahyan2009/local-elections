@@ -139,7 +139,7 @@ const PublicCandidates = () => {
                 <div className="p-3">
                   {/* ===== ASLI BALLOT PAPER STYLE ROW ===== */}
                   <div
-                    className="flex items-center border-2 border-slate-300 rounded-md px-2 py-1.5 bg-white gap-2"
+                    className="flex items-center justify-center border-2 border-slate-300 rounded-md px-2 py-1.5 bg-white gap-2"
                     dir="ltr"
                   >
                     {/* Symbol */}
@@ -171,8 +171,8 @@ const PublicCandidates = () => {
                     </div>
 
                     {/* Name */}
-                    <div className="flex-1 min-w-0 text-right pr-1" dir="rtl">
-                      <h3 className="font-bold text-slate-800 text-sm sm:text-base leading-tight truncate">
+                    <div className="text-right" dir="rtl">
+                      <h3 className="font-bold text-slate-800 text-sm sm:text-base leading-tight truncate max-w-[120px]">
                         {c.fullName || '---'}
                       </h3>
                     </div>
