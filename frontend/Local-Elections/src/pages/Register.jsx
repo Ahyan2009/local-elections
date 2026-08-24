@@ -101,6 +101,7 @@ const Register = () => {
   // Crop states
   const [showCropModal, setShowCropModal] = useState(false);
   const [cropImageSrc, setCropImageSrc] = useState(null);
+  const [originalImageSrc, setOriginalImageSrc] = useState(null); // اصل تصویر محفوظ رکھنے کے لیے
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
@@ -163,6 +164,7 @@ const Register = () => {
       const reader = new FileReader();
       reader.onload = () => {
         setCropImageSrc(reader.result);
+        setOriginalImageSrc(reader.result); // اصل تصویر محفوظ کر لو
         setShowCropModal(true);
         setCrop({ x: 0, y: 0 });
         setZoom(1);
@@ -204,9 +206,15 @@ const Register = () => {
   const handleCropCancel = () => {
     setShowCropModal(false);
     setCropImageSrc(null);
-    // Clear previous selection if user cancels
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+  };
+
+  // تصویر پر کلک کر کے دوبارہ کراپ کھولیں
+  const handleReCrop = () => {
+    if (originalImageSrc) {
+      setCropImageSrc(originalImageSrc);
+      setShowCropModal(true);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
     }
   };
 
@@ -275,11 +283,21 @@ const Register = () => {
           {/* Profile Image Section */}
           <div className="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 p-4 rounded-xl bg-slate-50">
             {imagePreview ? (
-              <img 
-                src={imagePreview} 
-                alt="Preview" 
-                className="w-28 h-28 object-cover rounded-lg mb-2 border-2 border-slate-800 shadow-sm filter grayscale" 
-              />
+              <div 
+                className="relative group cursor-pointer" 
+                onClick={handleReCrop}
+                title="کراپ ایڈٹ کرنے کے لیے کلک کریں"
+              >
+                <img 
+                  src={imagePreview} 
+                  alt="Preview" 
+                  className="w-28 h-28 object-cover rounded-lg mb-2 border-2 border-slate-800 shadow-sm filter grayscale" 
+                />
+                {/* Hover پر چھوٹا آئیکن */}
+                <div className="absolute inset-0 bg-black/40 rounded-lg opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity mb-2">
+                  <span className="text-white text-xs font-medium">کراپ ایڈٹ کریں</span>
+                </div>
+              </div>
             ) : (
               <div className="w-28 h-28 rounded-lg bg-slate-200 border border-slate-300 flex items-center justify-center text-xs text-slate-500 mb-2 text-center p-2 font-medium">
                 تصویر منتخب کریں (Square)
@@ -294,7 +312,11 @@ const Register = () => {
               className="text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:bg-slate-200 file:text-slate-800 hover:file:bg-slate-300 cursor-pointer"
               required={!profileImage}
             />
-            <p className="text-[10px] text-slate-400 mt-1">تصویر منتخب کرنے کے بعد آپ اسے کراپ کر سکیں گے</p>
+            <p className="text-[10px] text-slate-400 mt-1">
+              {imagePreview 
+                ? "تصویر پر کلک کر کے دوبارہ کراپ کر سکتے ہیں" 
+                : "تصویر منتخب کرنے کے بعد آپ اسے کراپ کر سکیں گے"}
+            </p>
           </div>
 
           {/* Email Address */}
