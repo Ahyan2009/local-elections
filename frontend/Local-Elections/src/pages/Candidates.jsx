@@ -83,7 +83,6 @@ const Candidates = () => {
     fetchCandidates();
   }, []);
 
-
   const handleStatusUpdate = async (id, status) => {
     const confirmMsg =
       status === 'approved'
@@ -177,7 +176,6 @@ const Candidates = () => {
     URL.revokeObjectURL(url);
   };
 
-
   return (
     <AdminLayout title="تمام امیدواروں کی فہرست">
       <div className="max-w-6xl mx-auto space-y-4 md:space-y-6">
@@ -254,11 +252,13 @@ const Candidates = () => {
             <div className="p-6 text-center text-gray-400">ڈیٹا لوڈ ہو رہا ہے...</div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-right text-sm min-w-[720px]">
+              <table className="w-full text-right text-sm min-w-[900px]">
                 <thead className="bg-slate-950 text-gray-300 border-b border-slate-700">
                   <tr>
                     <th className="p-2 sm:p-3 whitespace-nowrap">نمبر</th>
+                    <th className="p-2 sm:p-3 whitespace-nowrap text-center">تصویر</th>
                     <th className="p-2 sm:p-3 whitespace-nowrap">نام</th>
+                    <th className="p-2 sm:p-3 whitespace-nowrap text-center">نشان</th>
                     <th className="p-2 sm:p-3 whitespace-nowrap">CNIC</th>
                     <th className="p-2 sm:p-3 whitespace-nowrap">فون</th>
                     <th className="p-2 sm:p-3 whitespace-nowrap">ضلع</th>
@@ -273,8 +273,43 @@ const Candidates = () => {
                       <td className="p-2 sm:p-3 font-medium whitespace-nowrap">
                         {(currentPage - 1) * perPage + index + 1}
                       </td>
+                      <td className="p-2 sm:p-3 text-center">
+                        <div className="w-10 h-10 mx-auto rounded-full overflow-hidden bg-slate-700 border border-slate-600 flex items-center justify-center">
+                          {item.image ? (
+                            <img
+                              src={item.image}
+                              alt={item.fullName || 'candidate'}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span className="text-emerald-400 text-sm font-bold">
+                              {(item.fullName || item.name || '?').charAt(0)}
+                            </span>
+                          )}
+                        </div>
+                      </td>
                       <td className="p-2 sm:p-3 whitespace-nowrap max-w-[140px] truncate">
                         {item.fullName || item.name || '---'}
+                      </td>
+                      <td className="p-2 sm:p-3 text-center">
+                        <div className="flex flex-col items-center gap-1 min-w-[56px]">
+                          {item.symbolIcon ? (
+                            <img
+                              src={item.symbolIcon}
+                              alt={item.electionSymbol || 'symbol'}
+                              className="w-8 h-8 object-contain"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded bg-slate-700 flex items-center justify-center text-xs text-slate-500">
+                              —
+                            </div>
+                          )}
+                          <span className="text-[10px] text-slate-400 max-w-[70px] truncate">
+                            {item.electionSymbol && item.electionSymbol !== 'Pending'
+                              ? item.electionSymbol
+                              : ''}
+                          </span>
+                        </div>
                       </td>
                       <td className="p-2 sm:p-3 font-mono text-xs whitespace-nowrap" dir="ltr">
                         {item.cnic || '---'}
@@ -372,7 +407,6 @@ const Candidates = () => {
       </div>
     </AdminLayout>
   );
-
 };
 
 export default Candidates;
