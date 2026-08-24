@@ -137,26 +137,24 @@ const PublicCandidates = () => {
                 <div className="h-1 bg-gradient-to-l from-emerald-500 to-emerald-700"></div>
                 
                 <div className="p-5">
-                  {/* ===== BALLOT PAPER STYLE - Symbol & Photo SAME SIZE ===== */}
-                  <div className="flex items-center justify-between gap-3" dir="ltr">
+                  {/* ===== BALLOT STYLE - Symbol & Photo EXACTLY SAME SIZE ===== */}
+                  <div className="flex items-center justify-between gap-4" dir="ltr">
                     
-                    {/* 1. Election Symbol (Left) - Same size as photo */}
-                    <div className="w-20 h-24 sm:w-24 sm:h-28 shrink-0 flex items-center justify-center">
+                    {/* 1. Election Symbol - SAME SIZE as photo */}
+                    <div className="w-24 h-28 shrink-0 flex items-center justify-center bg-slate-50 rounded-md border border-slate-200">
                       {c.symbolIcon ? (
                         <img
                           src={c.symbolIcon}
                           alt={c.electionSymbol || 'symbol'}
-                          className="max-w-full max-h-full object-contain"
+                          className="w-full h-full object-contain p-2"
                         />
                       ) : (
-                        <div className="w-16 h-20 rounded-md bg-slate-100 flex items-center justify-center text-slate-400 text-sm">
-                          —
-                        </div>
+                        <span className="text-slate-400 text-sm">—</span>
                       )}
                     </div>
 
-                    {/* 2. Candidate Photo (Center) - Same size as symbol */}
-                    <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-md overflow-hidden border-2 border-slate-300 bg-slate-50 flex items-center justify-center shrink-0 shadow-sm">
+                    {/* 2. Candidate Photo - SAME SIZE as symbol */}
+                    <div className="w-24 h-28 shrink-0 rounded-md overflow-hidden border-2 border-slate-300 bg-slate-50 flex items-center justify-center shadow-sm">
                       {c.image ? (
                         <img
                           src={c.image}
@@ -170,8 +168,8 @@ const PublicCandidates = () => {
                       )}
                     </div>
 
-                    {/* 3. Name (Right) */}
-                    <div className="flex-1 min-w-0 text-right pr-1" dir="rtl">
+                    {/* 3. Name */}
+                    <div className="flex-1 min-w-0 text-right" dir="rtl">
                       <h3 className="font-bold text-slate-800 text-xl sm:text-2xl leading-tight break-words">
                         {c.fullName || '---'}
                       </h3>
