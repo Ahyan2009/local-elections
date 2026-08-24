@@ -139,7 +139,7 @@ const PublicCandidates = () => {
                 <div className="p-3">
                   {/* ===== ASLI BALLOT PAPER STYLE ROW ===== */}
                   <div
-                    className="flex items-center justify-center border-2 border-slate-300 rounded-md px-4 py-1.5 bg-white gap-4"
+                    className="flex items-center justify-center border-2 border-slate-300 rounded-md px-4 py-1.5 bg-white gap-12"
                     dir="ltr"
                   >
                     {/* Symbol */}
