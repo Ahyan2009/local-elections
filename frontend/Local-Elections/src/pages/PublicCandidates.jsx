@@ -137,24 +137,24 @@ const PublicCandidates = () => {
                 <div className="h-1 bg-gradient-to-l from-emerald-500 to-emerald-700"></div>
                 
                 <div className="p-5">
-                  {/* ===== BALLOT STYLE - Symbol & Photo EXACTLY SAME SIZE ===== */}
-                  <div className="flex items-center justify-between gap-4" dir="ltr">
+                  {/* ===== BALLOT STYLE - Symbol & Photo SAME SIZE (thoda chhota) ===== */}
+                  <div className="flex items-center justify-between gap-3" dir="ltr">
                     
-                    {/* 1. Election Symbol - SAME SIZE as photo */}
-                    <div className="w-24 h-28 shrink-0 flex items-center justify-center bg-slate-50 rounded-md border border-slate-200">
+                    {/* 1. Election Symbol */}
+                    <div className="w-16 h-20 sm:w-18 sm:h-22 shrink-0 flex items-center justify-center bg-slate-50 rounded-md border border-slate-200">
                       {c.symbolIcon ? (
                         <img
                           src={c.symbolIcon}
                           alt={c.electionSymbol || 'symbol'}
-                          className="w-full h-full object-contain p-2"
+                          className="w-full h-full object-contain p-1.5"
                         />
                       ) : (
                         <span className="text-slate-400 text-sm">—</span>
                       )}
                     </div>
 
-                    {/* 2. Candidate Photo - SAME SIZE as symbol */}
-                    <div className="w-24 h-28 shrink-0 rounded-md overflow-hidden border-2 border-slate-300 bg-slate-50 flex items-center justify-center shadow-sm">
+                    {/* 2. Candidate Photo */}
+                    <div className="w-16 h-20 sm:w-18 sm:h-22 shrink-0 rounded-md overflow-hidden border-2 border-slate-300 bg-slate-50 flex items-center justify-center shadow-sm">
                       {c.image ? (
                         <img
                           src={c.image}
@@ -162,7 +162,7 @@ const PublicCandidates = () => {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="text-2xl font-bold text-emerald-600">
+                        <span className="text-xl font-bold text-emerald-600">
                           {(c.fullName || '?').charAt(0)}
                         </span>
                       )}
@@ -170,14 +170,14 @@ const PublicCandidates = () => {
 
                     {/* 3. Name */}
                     <div className="flex-1 min-w-0 text-right" dir="rtl">
-                      <h3 className="font-bold text-slate-800 text-xl sm:text-2xl leading-tight break-words">
+                      <h3 className="font-bold text-slate-800 text-lg sm:text-xl leading-tight break-words">
                         {c.fullName || '---'}
                       </h3>
                     </div>
                   </div>
 
                   {/* ===== UC + تحصیل ===== */}
-                  <div className="grid grid-cols-2 gap-2 text-xs text-slate-600 mt-5">
+                  <div className="grid grid-cols-2 gap-2 text-xs text-slate-600 mt-4">
                     <div className="bg-slate-50 rounded-lg p-2">
                       <span className="text-slate-400 block">UC</span>
                       {c.unionCouncil || '---'}
