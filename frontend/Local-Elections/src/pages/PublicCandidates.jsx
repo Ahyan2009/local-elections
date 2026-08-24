@@ -137,10 +137,10 @@ const PublicCandidates = () => {
                 <div className="h-1 bg-gradient-to-l from-emerald-500 to-emerald-700"></div>
                 
                 <div className="p-4">
-                  {/* ===== BALLOT STYLE - Gap bilkul khatam ===== */}
-                  <div className="flex items-center gap-2" dir="ltr">
+                  {/* ===== BALANCED BALLOT LAYOUT ===== */}
+                  <div className="flex items-center gap-3" dir="ltr">
                     
-                    {/* 1. Election Symbol */}
+                    {/* Symbol */}
                     <div className="w-14 h-16 sm:w-16 sm:h-18 shrink-0 flex items-center justify-center bg-slate-50 rounded-md border border-slate-200">
                       {c.symbolIcon ? (
                         <img
@@ -153,7 +153,7 @@ const PublicCandidates = () => {
                       )}
                     </div>
 
-                    {/* 2. Candidate Photo */}
+                    {/* Photo */}
                     <div className="w-14 h-16 sm:w-16 sm:h-18 shrink-0 rounded-md overflow-hidden border-2 border-slate-300 bg-slate-50 flex items-center justify-center shadow-sm">
                       {c.image ? (
                         <img
@@ -168,15 +168,15 @@ const PublicCandidates = () => {
                       )}
                     </div>
 
-                    {/* 3. Name - bilkul paas, no extra space */}
-                    <div className="text-right" dir="rtl">
-                      <h3 className="font-bold text-slate-800 text-base sm:text-lg leading-tight">
+                    {/* Name */}
+                    <div className="flex-1 text-right pr-1" dir="rtl">
+                      <h3 className="font-bold text-slate-800 text-base sm:text-lg leading-snug">
                         {c.fullName || '---'}
                       </h3>
                     </div>
                   </div>
 
-                  {/* ===== UC + تحصیل ===== */}
+                  {/* UC + تحصیل */}
                   <div className="grid grid-cols-2 gap-2 text-xs text-slate-600 mt-4">
                     <div className="bg-slate-50 rounded-lg p-2">
                       <span className="text-slate-400 block">UC</span>
@@ -188,7 +188,7 @@ const PublicCandidates = () => {
                     </div>
                   </div>
 
-                  {/* ===== Bottom status ===== */}
+                  {/* Bottom */}
                   <div className="flex items-center justify-between pt-3">
                     <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2.5 py-0.5 rounded-full font-medium">
                       منظور شدہ
