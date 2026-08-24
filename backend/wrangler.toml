@@ -1,4 +1,8 @@
 name = "candidate-system-api"
 main = "server.js"
 compatibility_date = "2026-08-22"
+<<<<<<< HEAD
 compatibility_flags = ["nodejs_compat"]
+=======
+compatibility_flags = ["nodejs_compat"]
+>>>>>>> bfa7733bc1ca36379340e1bb17b4c79b26470854

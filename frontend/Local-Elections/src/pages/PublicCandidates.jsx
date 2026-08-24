@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../api/axios';
 import { useNavigate } from 'react-router-dom';
 
 const PublicCandidates = () => {
@@ -11,7 +11,7 @@ const PublicCandidates = () => {
   useEffect(() => {
     const fetchPublic = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/candidate/public');
+        const res = await API.get('/candidate/public');
         setCandidates(res.data || []);
       } catch (err) {
         console.error(err);
