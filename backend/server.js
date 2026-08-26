@@ -10,7 +10,6 @@ dotenv.config();
 
 const app = express();
 
-// CORS - Frontend ke liye allow
 app.use(cors({
   origin: [
     'https://local-elections-661.pages.dev',
@@ -25,16 +24,13 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Routes
 app.use('/api/candidate', candidateRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Health check
 app.get('/', (req, res) => {
   res.json({ message: 'Candidate System API is running on Cloudflare Workers' });
 });
 
-// MongoDB connection
 let isConnected = false;
 
 async function connectDB() {
@@ -49,7 +45,6 @@ async function connectDB() {
   }
 }
 
-// Har request se pehle DB connect
 app.use(async (req, res, next) => {
   await connectDB();
   next();
