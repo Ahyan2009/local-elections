@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
+import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
 import OtpVerification from './pages/OtpVerification'
 import Register from './pages/Register'
@@ -26,11 +27,12 @@ const AppShell = () => {
         <Route path="/register-candidate" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/candidates" element={<PublicCandidates />} />
-        <Route path="/admin/requests" element={<AdminRequests />} />
-        <Route path="/admin/candidates" element={<Candidates />} />
-        <Route path="/admin/candidates/:id" element={<CandidateDetails />} />
-        <Route path="/admin/candidate-details" element={<CandidateDetails />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
+        <Route path="/admin/requests" element={<ProtectedRoute><AdminRequests /></ProtectedRoute>} />
+        <Route path="/admin/candidates" element={<ProtectedRoute><Candidates /></ProtectedRoute>} />
+        <Route path="/admin/candidates/:id" element={<ProtectedRoute><CandidateDetails /></ProtectedRoute>} />
+        <Route path="/admin/candidate-details" element={<ProtectedRoute><CandidateDetails /></ProtectedRoute>} />
+        <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
       </Routes>
     </>
   )
