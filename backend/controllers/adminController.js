@@ -8,7 +8,10 @@ export const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (email === 'admin@system.gov.pk' && password === 'admin123') {
+    const validEmail = process.env.ADMIN_EMAIL;
+    const validPassword = process.env.ADMIN_PASSWORD;
+
+    if (email === validEmail && password === validPassword) {
       const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET || 'secretkey', {
         expiresIn: '1d',
       });
